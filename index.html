@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RentEasy - Peer-to-Peer Rental Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1a9e72;
+    --green-light: #e6f7f1;
+    --green-dark: #0d6e4e;
+    --bg: #f7f6f2;
+    --card: #ffffff;
+    --text: #1a1a18;
+    --text-muted: #7a7a74;
+    --border: #e5e3dc;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', 'Noto Sans SC', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.6; }
+
+  /* NAV */
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(247,246,242,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .logo { font-size: 22px; font-weight: 700; color: var(--green); letter-spacing: -0.5px; }
+  .logo em { color: var(--text); font-style: normal; }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 14px; transition: color .2s; cursor: pointer; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-right { display: flex; gap: 10px; align-items: center; }
+  .btn { padding: 8px 18px; border-radius: 99px; font-size: 14px; font-family: inherit; cursor: pointer; transition: all .2s; border: 1.5px solid var(--border); background: transparent; color: var(--text); }
+  .btn:hover { border-color: var(--green); color: var(--green); }
+  .btn-primary { background: var(--green); color: #fff; border-color: var(--green); font-weight: 500; }
+  .btn-primary:hover { background: var(--green-dark); border-color: var(--green-dark); }
+
+  /* LANG TOGGLE */
+  .lang-toggle { display: flex; align-items: center; background: var(--card); border: 1.5px solid var(--border); border-radius: 99px; overflow: hidden; }
+  .lang-btn { padding: 5px 14px; font-size: 13px; font-family: inherit; cursor: pointer; border: none; background: transparent; color: var(--text-muted); transition: all .2s; font-weight: 500; }
+  .lang-btn.active { background: var(--green); color: #fff; }
+
+  /* HERO */
+  .hero { padding: 72px 24px 56px; text-align: center; max-width: 700px; margin: 0 auto; }
+  .hero-badge { display: inline-block; margin-bottom: 20px; background: var(--green-light); color: var(--green-dark); padding: 5px 16px; border-radius: 99px; font-size: 13px; font-weight: 500; }
+  .hero h1 { font-size: clamp(28px, 5vw, 44px); font-weight: 700; line-height: 1.2; letter-spacing: -1px; margin-bottom: 16px; }
+  .hero h1 span { color: var(--green); }
+  .hero p { color: var(--text-muted); font-size: 16px; margin-bottom: 32px; }
+  .search-wrap { display: flex; background: var(--card); border: 1.5px solid var(--border); border-radius: 99px; padding: 6px 6px 6px 20px; max-width: 500px; margin: 0 auto 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+  .search-wrap input { flex: 1; border: none; background: transparent; font-size: 15px; font-family: inherit; color: var(--text); outline: none; }
+  .search-wrap input::placeholder { color: var(--text-muted); }
+  .hero-stats { display: flex; justify-content: center; gap: 40px; margin-top: 24px; }
+  .hero-stat span { display: block; font-size: 22px; font-weight: 700; color: var(--green); }
+  .hero-stat small { font-size: 12px; color: var(--text-muted); }
+
+  /* SECTION */
+  .section { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
+  .section-header h2 { font-size: 20px; font-weight: 700; }
+  .section-header a { font-size: 13px; color: var(--green); text-decoration: none; cursor: pointer; }
+
+  /* CAT TABS */
+  .cat-tabs { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 24px; max-width: 1100px; margin: 0 auto 32px; }
+  .cat-tab { padding: 7px 18px; border-radius: 99px; border: 1.5px solid var(--border); font-size: 13px; cursor: pointer; background: var(--card); color: var(--text-muted); transition: all .2s; white-space: nowrap; font-family: inherit; }
+  .cat-tab:hover, .cat-tab.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+  /* GRID */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 48px; }
+  .card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; transition: transform .2s, box-shadow .2s; cursor: pointer; }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
+  .card-img { height: 140px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 48px; position: relative; }
+  .card-badge { position: absolute; top: 10px; left: 10px; font-size: 11px; padding: 3px 10px; border-radius: 99px; font-weight: 500; }
+  .badge-hot { background: #ffeee6; color: #c94d1a; }
+  .badge-new { background: var(--green-light); color: var(--green-dark); }
+  .card-body { padding: 12px 14px 14px; }
+  .card-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .card-loc { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+  .card-footer { display: flex; align-items: baseline; justify-content: space-between; }
+  .card-price { font-size: 18px; font-weight: 700; color: var(--green); }
+  .card-price small { font-size: 12px; font-weight: 400; color: var(--text-muted); }
+  .card-rating { font-size: 12px; color: var(--text-muted); }
+  .card-rating::before { content: "★"; color: #f5a623; margin-right: 2px; }
+
+  /* HOW IT WORKS */
+  .how { background: var(--card); padding: 56px 24px; }
+  .how-inner { max-width: 1100px; margin: 0 auto; }
+  .how-inner h2 { text-align: center; font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+  .how-inner .sub { text-align: center; color: var(--text-muted); margin-bottom: 40px; }
+  .how-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; }
+  .how-step { text-align: center; padding: 24px 16px; }
+  .how-icon { width: 64px; height: 64px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px; background: var(--green-light); }
+  .how-num { display: inline-block; width: 22px; height: 22px; border-radius: 50%; background: var(--green); color: #fff; font-size: 12px; font-weight: 700; line-height: 22px; text-align: center; margin-bottom: 10px; }
+  .how-step h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+  .how-step p { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+
+  /* CTA */
+  .cta { margin: 48px auto; max-width: 1100px; padding: 0 24px; }
+  .cta-inner { background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%); border-radius: 20px; padding: 48px 40px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .cta-text h2 { font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .cta-text p { color: rgba(255,255,255,0.75); font-size: 15px; }
+  .btn-white { background: #fff; color: var(--green-dark); border-color: #fff; font-weight: 600; }
+  .btn-white:hover { background: var(--green-light); }
+
+  /* FOOTER */
+  footer { background: var(--text); color: rgba(255,255,255,0.5); padding: 40px 24px; text-align: center; font-size: 13px; }
+  footer strong { color: rgba(255,255,255,0.9); }
+  footer a { color: rgba(255,255,255,0.4); text-decoration: none; }
+
+  /* MODAL */
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 999; align-items: center; justify-content: center; padding: 20px; }
+  .modal-bg.open { display: flex; }
+  .modal { background: var(--card); border-radius: 20px; padding: 32px; width: 100%; max-width: 480px; position: relative; max-height: 90vh; overflow-y: auto; }
+  .modal-close { position: absolute; top: 16px; right: 20px; font-size: 20px; cursor: pointer; color: var(--text-muted); background: none; border: none; font-family: inherit; }
+  .modal h3 { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+  .form-field { margin-bottom: 16px; }
+  .form-field label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text-muted); }
+  .form-field input, .form-field textarea, .form-field select { width: 100%; padding: 10px 14px; border-radius: var(--radius-sm); border: 1.5px solid var(--border); background: var(--bg); font-size: 14px; font-family: inherit; color: var(--text); outline: none; transition: border-color .2s; }
+  .form-field input:focus, .form-field textarea:focus, .form-field select:focus { border-color: var(--green); }
+  .form-field textarea { resize: vertical; min-height: 80px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .detail-img { height: 180px; background: var(--bg); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 64px; margin-bottom: 16px; }
+  .detail-price { font-size: 28px; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+  .detail-price small { font-size: 15px; font-weight: 400; color: var(--text-muted); }
+  .detail-info { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+  .detail-info-item { background: var(--bg); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .detail-info-item small { font-size: 11px; color: var(--text-muted); display: block; }
+  .detail-info-item strong { font-size: 14px; }
+
+  @media (max-width: 600px) {
+    .nav-links { display: none; }
+    .hero { padding: 48px 16px 40px; }
+    .cta-inner { padding: 32px 24px; }
+    .hero-stats { gap: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Rent<em>Easy</em></div>
+  <ul class="nav-links">
+    <li><a data-i18n="nav_home">Home</a></li>
+    <li><a data-i18n="nav_browse">Browse</a></li>
+    <li><a data-i18n="nav_how">How it works</a></li>
+    <li><a data-i18n="nav_about">About</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('zh')">中文</button>
+    </div>
+    <button class="btn" onclick="openLogin()" data-i18n="btn_login">Login</button>
+    <button class="btn btn-primary" onclick="openPost()" data-i18n="btn_post">List an Item</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge" data-i18n="hero_badge">✦ Now open — peer-to-peer rentals</div>
+  <h1 data-i18n="hero_title">Rent anything.<br><span>Earn from everything.</span></h1>
+  <p data-i18n="hero_sub">Connect with people nearby to rent or lend items safely and affordably.</p>
+  <div class="search-wrap">
+    <input type="text" id="searchInput" data-i18n-placeholder="search_placeholder" placeholder="Search items, e.g. camera, tent, drill…" onkeydown="if(event.key==='Enter')doSearch()" />
+    <button class="btn btn-primary" onclick="doSearch()" data-i18n="btn_search">Search</button>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><span>3,200+</span><small data-i18n="stat_items">Items listed</small></div>
+    <div class="hero-stat"><span>8,500+</span><small data-i18n="stat_users">Registered users</small></div>
+    <div class="hero-stat"><span>98%</span><small data-i18n="stat_rating">Satisfaction rate</small></div>
+  </div>
+</section>
+
+<div class="cat-tabs" id="catTabs"></div>
+
+<div class="section">
+  <div class="section-header">
+    <h2 id="gridTitle" data-i18n="grid_title">Popular Items</h2>
+    <a data-i18n="view_all">View all →</a>
+  </div>
+  <div class="grid" id="productGrid"></div>
+</div>
+
+<div class="how">
+  <div class="how-inner">
+    <h2 data-i18n="how_title">How does RentEasy work?</h2>
+    <p class="sub" data-i18n="how_sub">Three simple steps to rent or lend</p>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-num">1</div>
+        <div class="how-icon">🔍</div>
+        <h3 data-i18n="step1_title">Browse & Search</h3>
+        <p data-i18n="step1_desc">Search by keyword or browse categories to find what you need.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">2</div>
+        <div class="how-icon">📅</div>
+        <h3 data-i18n="step2_title">Book & Pay</h3>
+        <p data-i18n="step2_desc">Choose your dates, confirm with the owner, and pay securely.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">3</div>
+        <div class="how-icon">🤝</div>
+        <h3 data-i18n="step3_title">Pick Up & Use</h3>
+        <p data-i18n="step3_desc">Meet up or have it delivered. Return when you're done.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">4</div>
+        <div class="how-icon">⭐</div>
+        <h3 data-i18n="step4_title">Leave a Review</h3>
+        <p data-i18n="step4_desc">Rate your experience to help build trust in the community.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cta">
+  <div class="cta-inner">
+    <div class="cta-text">
+      <h2 data-i18n="cta_title">Have something sitting around? Earn from it.</h2>
+      <p data-i18n="cta_sub">Listing takes 2 minutes. Turn idle items into income.</p>
+    </div>
+    <button class="btn btn-white" onclick="openPost()" data-i18n="cta_btn">List an Item Now</button>
+  </div>
+</div>
+
+<footer>
+  <strong>RentEasy</strong> &nbsp;·&nbsp; <span data-i18n="footer_tagline">Making idle things useful</span><br><br>
+  © 2025 RentEasy &nbsp;·&nbsp;
+  <a data-i18n="footer_terms">Terms</a> &nbsp;·&nbsp;
+  <a data-i18n="footer_privacy">Privacy</a> &nbsp;·&nbsp;
+  <a data-i18n="footer_contact">Contact</a>
+</footer>
+
+<!-- LOGIN MODAL -->
+<div class="modal-bg" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <h3 data-i18n="login_title">Sign in</h3>
+    <div class="form-field"><label data-i18n="login_phone">Phone number</label><input type="text" data-i18n-placeholder="login_phone_ph" placeholder="Enter your phone number" /></div>
+    <div class="form-field">
+      <label data-i18n="login_code">Verification code</label>
+      <div style="display:flex;gap:8px;">
+        <input type="text" data-i18n-placeholder="login_code_ph" placeholder="Enter code" style="flex:1" />
+        <button class="btn btn-primary" style="white-space:nowrap;border-radius:8px;" data-i18n="login_send_code">Send code</button>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;margin-top:8px;border-radius:10px;padding:12px;" data-i18n="login_submit">Login / Register</button>
+    <p style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:12px;" data-i18n="login_agree">By logging in you agree to our Terms and Privacy Policy.</p>
+  </div>
+</div>
+
+<!-- POST MODAL -->
+<div class="modal-bg" id="postModal">
+  <div class="modal" style="max-width:520px;">
+    <button class="modal-close" onclick="closeModal('postModal')">✕</button>
+    <h3 data-i18n="post_title">List an item for rent</h3>
+    <div class="form-field"><label data-i18n="post_name">Item name *</label><input type="text" data-i18n-placeholder="post_name_ph" placeholder="e.g. Sony A7III Camera Kit" /></div>
+    <div class="form-row">
+      <div class="form-field"><label data-i18n="post_cat">Category *</label>
+        <select id="postCatSelect"></select>
+      </div>
+      <div class="form-field"><label data-i18n="post_cond">Condition *</label>
+        <select id="postCondSelect"></select>
+      </div>
+    </div>
+    <div class="form-field"><label data-i18n="post_desc">Description</label><textarea data-i18n-placeholder="post_desc_ph" placeholder="Describe the item, accessories included, usage notes…"></textarea></div>
+    <div class="form-row">
+      <div class="form-field"><label data-i18n="post_price">Daily price ($) *</label><input type="number" placeholder="e.g. 25" /></div>
+      <div class="form-field"><label data-i18n="post_deposit">Deposit ($)</label><input type="number" placeholder="e.g. 100" /></div>
+    </div>
+    <div class="form-field"><label data-i18n="post_city">City</label>
+      <select id="postCitySelect"></select>
+    </div>
+    <div class="form-field"><label data-i18n="post_contact">Contact *</label><input type="text" data-i18n-placeholder="post_contact_ph" placeholder="Phone or email" /></div>
+    <button class="btn btn-primary" style="width:100%;border-radius:10px;padding:12px;margin-top:4px;" onclick="submitPost()" data-i18n="post_submit">Submit for review</button>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-bg" id="detailModal">
+  <div class="modal" id="detailContent"></div>
+</div>
+
+<script>
+const i18n = {
+  en: {
+    nav_home: "Home", nav_browse: "Browse", nav_how: "How it works", nav_about: "About",
+    btn_login: "Login", btn_post: "List an Item", btn_search: "Search",
+    hero_badge: "✦ Now open — peer-to-peer rentals",
+    hero_title: "Rent anything.<br><span>Earn from everything.</span>",
+    hero_sub: "Connect with people nearby to rent or lend items safely and affordably.",
+    search_placeholder: "Search items, e.g. camera, tent, drill…",
+    stat_items: "Items listed", stat_users: "Registered users", stat_rating: "Satisfaction rate",
+    grid_title: "Popular Items", view_all: "View all →",
+    how_title: "How does RentEasy work?", how_sub: "Three simple steps to rent or lend",
+    step1_title: "Browse & Search", step1_desc: "Search by keyword or browse categories to find what you need.",
+    step2_title: "Book & Pay", step2_desc: "Choose your dates, confirm with the owner, and pay securely.",
+    step3_title: "Pick Up & Use", step3_desc: "Meet up or have it delivered. Return when you're done.",
+    step4_title: "Leave a Review", step4_desc: "Rate your experience to help build trust in the community.",
+    cta_title: "Have something sitting around? Earn from it.",
+    cta_sub: "Listing takes 2 minutes. Turn idle items into income.",
+    cta_btn: "List an Item Now",
+    footer_tagline: "Making idle things useful",
+    footer_terms: "Terms", footer_privacy: "Privacy", footer_contact: "Contact",
+    login_title: "Sign in", login_phone: "Phone number", login_phone_ph: "Enter your phone number",
+    login_code: "Verification code", login_code_ph: "Enter code", login_send_code: "Send code",
+    login_submit: "Login / Register", login_agree: "By logging in you agree to our Terms and Privacy Policy.",
+    post_title: "List an item for rent", post_name: "Item name *", post_name_ph: "e.g. Sony A7III Camera Kit",
+    post_cat: "Category *", post_cond: "Condition *", post_desc: "Description",
+    post_desc_ph: "Describe the item, accessories included, usage notes…",
+    post_price: "Daily price ($) *", post_deposit: "Deposit ($)", post_city: "City",
+    post_contact: "Contact *", post_contact_ph: "Phone or email", post_submit: "Submit for review",
+    detail_deposit: "Deposit", detail_rating: "Rating", detail_condition: "Condition",
+    detail_book: "Book Now",
+    cats: ["All", "🏠 Appliances", "⛺ Outdoors", "📷 Photography", "🔨 Tools", "🧸 Baby & Kids", "💻 Electronics", "👗 Clothing"],
+    cond_opts: ["Brand new", "Like new", "Good", "Fair"],
+    cities: ["New York", "Los Angeles", "Chicago", "Houston", "Toronto", "London", "Other"],
+    badge_hot: "🔥 Hot", badge_new: "New",
+    per_day: "/day",
+    submit_success: "✅ Submitted! We will review your listing within 24 hours.",
+  },
+  zh: {
+    nav_home: "首页", nav_browse: "浏览物品", nav_how: "如何使用", nav_about: "关于我们",
+    btn_login: "登录", btn_post: "发布出租", btn_search: "搜索",
+    hero_badge: "✦ 全新租借交易平台上线",
+    hero_title: "闲置物品出租，<span>轻松赚钱</span><br>需要什么，就租什么",
+    hero_sub: "连接出租方与租借方，安全、便捷、实惠",
+    search_placeholder: "搜索物品，如：相机、帐篷、钻孔机…",
+    stat_items: "在租物品", stat_users: "注册用户", stat_rating: "好评率",
+    grid_title: "热门出租物品", view_all: "查看全部 →",
+    how_title: "怎么使用租易？", how_sub: "三步完成租借，简单快捷",
+    step1_title: "搜索物品", step1_desc: "输入关键词或按分类浏览，找到你需要的物品。",
+    step2_title: "预约租借", step2_desc: "选择租借日期，与出租方确认，安全付款。",
+    step3_title: "完成交易", step3_desc: "当面交接或快递配送，使用完毕归还即可。",
+    step4_title: "互相评价", step4_desc: "完成租借后双方评价，建立信用体系。",
+    cta_title: "有闲置物品？出租赚钱吧！",
+    cta_sub: "发布只需 2 分钟，轻松获得额外收入，闲置变现不是梦",
+    cta_btn: "立即发布出租",
+    footer_tagline: "让闲置创造价值",
+    footer_terms: "用户协议", footer_privacy: "隐私政策", footer_contact: "联系我们",
+    login_title: "登录账号", login_phone: "手机号", login_phone_ph: "请输入手机号",
+    login_code: "验证码", login_code_ph: "请输入验证码", login_send_code: "获取验证码",
+    login_submit: "登录 / 注册", login_agree: "登录即表示同意《用户协议》和《隐私政策》",
+    post_title: "发布出租物品", post_name: "物品名称 *", post_name_ph: "如：索尼 A7III 相机套机",
+    post_cat: "分类 *", post_cond: "成色 *", post_desc: "物品描述",
+    post_desc_ph: "描述物品状况、包含配件等…",
+    post_price: "每日租金（元） *", post_deposit: "押金（元）", post_city: "所在城市",
+    post_contact: "联系方式 *", post_contact_ph: "手机号或微信号", post_submit: "提交审核",
+    detail_deposit: "押金", detail_rating: "评分", detail_condition: "成色",
+    detail_book: "立即预约租借",
+    cats: ["全部", "🏠 家用电器", "⛺ 运动户外", "📷 摄影器材", "🔨 工具设备", "🧸 婴幼儿用品", "💻 数码电子", "👗 服装配饰"],
+    cond_opts: ["全新未拆", "9成新", "8成新", "7成新"],
+    cities: ["北京", "上海", "广州", "深圳", "成都", "杭州", "其他"],
+    badge_hot: "🔥 热门", badge_new: "新上架",
+    per_day: "/天",
+    submit_success: "✅ 提交成功！我们将在 24 小时内审核您的物品。",
+  }
+};
+
+const products = [
+  { id:1, name_en:"Sony A7III Camera Kit", name_zh:"索尼 A7III 相机套机", cat_en:"Photography", cat_zh:"摄影器材", icon:"📷", loc_en:"New York · Manhattan", loc_zh:"北京·海淀区", price:25, price_zh:150, deposit:100, deposit_zh:500, rating:4.9, reviews:28, cond_en:"Like new", cond_zh:"9成新", badge:"hot", desc_en:"Includes 28-70mm lens, spare battery, and camera bag. Great for travel or events.", desc_zh:"包含 28-70mm 镜头，附赠备用电池和摄影包，适合旅行、婚礼记录。" },
+  { id:2, name_en:"2-Person Camping Tent", name_zh:"双人充气帐篷", cat_en:"Outdoors", cat_zh:"运动户外", icon:"⛺", loc_en:"Los Angeles · Venice", loc_zh:"上海·浦东新区", price:12, price_zh:60, deposit:40, deposit_zh:200, rating:4.8, reviews:15, cond_en:"Like new", cond_zh:"9成新", badge:"new", desc_en:"Waterproof and windproof, ~3m² floor space. Includes stakes and pump.", desc_zh:"防水防风，展开面积约 3㎡，适合 2 人露营，含地钉和气泵。" },
+  { id:3, name_en:"Bosch Impact Drill", name_zh:"博世电动冲击钻", cat_en:"Tools", cat_zh:"工具设备", icon:"🔨", loc_en:"Chicago · Lincoln Park", loc_zh:"广州·天河区", price:8, price_zh:30, deposit:30, deposit_zh:150, rating:4.7, reviews:42, cond_en:"Good", cond_zh:"8成新", badge:"", desc_en:"700W motor, variable speed, includes 10 drill bits. Perfect for home projects.", desc_zh:"功率 700W，转速可调，配套钻头 10 支，适合家装打孔。" },
+  { id:4, name_en:"Xiaomi Electric Scooter", name_zh:"小米电动滑板车", cat_en:"Electronics", cat_zh:"数码电子", icon:"🛴", loc_en:"Houston · Midtown", loc_zh:"成都·武侯区", price:15, price_zh:80, deposit:60, deposit_zh:300, rating:4.9, reviews:31, cond_en:"Like new", cond_zh:"9成新", badge:"hot", desc_en:"~30km range, max 25km/h, new tires, charger included.", desc_zh:"续航约 30km，最高时速 25km/h，已换新轮胎，随附充电器。" },
+  { id:5, name_en:"DJI Mini 3 Drone", name_zh:"DJI Mini 3 无人机", cat_en:"Photography", cat_zh:"摄影器材", icon:"🚁", loc_en:"Toronto · Downtown", loc_zh:"杭州·西湖区", price:40, price_zh:200, deposit:160, deposit_zh:800, rating:5.0, reviews:9, cond_en:"Brand new", cond_zh:"全新", badge:"new", desc_en:"4K shooting, ~38min battery life, includes remote and spare blades.", desc_zh:"4K 拍摄，续航约 38 分钟，含遥控器和备用桨叶。" },
+  { id:6, name_en:"Baby Stroller", name_zh:"婴儿推车（好孩子）", cat_en:"Baby & Kids", cat_zh:"婴幼儿用品", icon:"🍼", loc_en:"New York · Brooklyn", loc_zh:"北京·朝阳区", price:6, price_zh:25, deposit:20, deposit_zh:100, rating:4.6, reviews:17, cond_en:"Good", cond_zh:"8成新", badge:"", desc_en:"Reclines flat, foldable, suitable for 0-3 years. Sanitized before rental.", desc_zh:"可平躺可坐，轻便折叠，适合 0-3 岁宝宝，已消毒清洁。" },
+  { id:7, name_en:"Standing Fan (Gree)", name_zh:"立式电风扇（格力）", cat_en:"Appliances", cat_zh:"家用电器", icon:"🌀", loc_en:"Chicago · West Loop", loc_zh:"深圳·南山区", price:5, price_zh:20, deposit:16, deposit_zh:80, rating:4.7, reviews:22, cond_en:"Like new", cond_zh:"9成新", badge:"", desc_en:"7-speed quiet oscillating fan. Free delivery within city limits.", desc_zh:"摇头静音，七档风速，租期内包邮到家，归还时同样包邮。" },
+  { id:8, name_en:"MacBook Pro 14-inch", name_zh:"MacBook Pro 14寸", cat_en:"Electronics", cat_zh:"数码电子", icon:"💻", loc_en:"Los Angeles · Santa Monica", loc_zh:"上海·静安区", price:35, price_zh:180, deposit:400, deposit_zh:2000, rating:4.8, reviews:6, cond_en:"Like new", cond_zh:"9成新", badge:"new", desc_en:"M2 chip, 16GB RAM, clean install. Ideal for short trips or dev work.", desc_zh:"M2 芯片，16GB 内存，已重装系统，适合短期出差或开发使用。" },
+];
+
+let lang = 'en';
+let currentCat = 0;
+
+function t(key) { return i18n[lang][key] || key; }
+
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().includes(l === 'en' ? 'en' : '中')));
+  document.body.style.fontFamily = l === 'zh' ? "'Noto Sans SC', sans-serif" : "'DM Sans', 'Noto Sans SC', sans-serif";
+  applyTranslations();
+  renderCats();
+  renderGrid(currentCat);
+  updatePostSelects();
+}
+
+function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (i18n[lang][key] !== undefined) el.innerHTML = i18n[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (i18n[lang][key]) el.placeholder = i18n[lang][key];
+  });
+}
+
+function renderCats() {
+  const cats = t('cats');
+  document.getElementById('catTabs').innerHTML = cats.map((c, i) =>
+    `<button class="cat-tab${i === currentCat ? ' active' : ''}" onclick="filterCat(${i})">${c}</button>`
+  ).join('');
+}
+
+function filterCat(i) {
+  currentCat = i;
+  renderCats();
+  renderGrid(i);
+  const catName = t('cats')[i];
+  document.getElementById('gridTitle').textContent = i === 0 ? t('grid_title') : catName.replace(/^[\S]+\s/, '');
+}
+
+function renderGrid(catIdx) {
+  const catMap_en = ['All','Appliances','Outdoors','Photography','Tools','Baby & Kids','Electronics','Clothing'];
+  const catMap_zh = ['全部','家用电器','运动户外','摄影器材','工具设备','婴幼儿用品','数码电子','服装配饰'];
+  const filtered = catIdx === 0 ? products : products.filter(p =>
+    lang === 'en' ? p.cat_en === catMap_en[catIdx] : p.cat_zh === catMap_zh[catIdx]
+  );
+  document.getElementById('productGrid').innerHTML = filtered.map(p => `
+    <div class="card" onclick="openDetail(${p.id})">
+      <div class="card-img">
+        ${p.badge==='hot' ? `<span class="card-badge badge-hot">${t('badge_hot')}</span>` : ''}
+        ${p.badge==='new' ? `<span class="card-badge badge-new">${t('badge_new')}</span>` : ''}
+        ${p.icon}
+      </div>
+      <div class="card-body">
+        <div class="card-title">${lang==='en' ? p.name_en : p.name_zh}</div>
+        <div class="card-loc">📍 ${lang==='en' ? p.loc_en : p.loc_zh}</div>
+        <div class="card-footer">
+          <div class="card-price">${lang==='en'?'$':'¥'}${lang==='en'?p.price:p.price_zh}<small>${t('per_day')}</small></div>
+          <div class="card-rating">${p.rating} (${p.reviews})</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openDetail(id) {
+  const p = products.find(x => x.id === id);
+  const currency = lang === 'en' ? '$' : '¥';
+  const price = lang === 'en' ? p.price : p.price_zh;
+  const deposit = lang === 'en' ? p.deposit : p.deposit_zh;
+  document.getElementById('detailContent').innerHTML = `
+    <button class="modal-close" onclick="closeModal('detailModal')">✕</button>
+    <div class="detail-img">${p.icon}</div>
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:4px;">${lang==='en'?p.name_en:p.name_zh}</h3>
+    <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">📍 ${lang==='en'?p.loc_en:p.loc_zh} &nbsp;·&nbsp; ${t('detail_condition')}：${lang==='en'?p.cond_en:p.cond_zh}</div>
+    <div class="detail-price">${currency}${price} <small>${t('per_day')}</small></div>
+    <div class="detail-info">
+      <div class="detail-info-item"><small>${t('detail_deposit')}</small><strong>${currency}${deposit}</strong></div>
+      <div class="detail-info-item"><small>${t('detail_rating')}</small><strong>★ ${p.rating}（${p.reviews}）</strong></div>
+    </div>
+    <p style="font-size:14px;color:var(--text-muted);line-height:1.8;margin-bottom:20px;">${lang==='en'?p.desc_en:p.desc_zh}</p>
+    <button class="btn btn-primary" style="width:100%;border-radius:10px;padding:12px;" onclick="closeModal('detailModal');openLogin()">${t('detail_book')}</button>
+  `;
+  document.getElementById('detailModal').classList.add('open');
+}
+
+function updatePostSelects() {
+  document.getElementById('postCatSelect').innerHTML = t('cats').slice(1).map(c => `<option>${c}</option>`).join('');
+  document.getElementById('postCondSelect').innerHTML = t('cond_opts').map(c => `<option>${c}</option>`).join('');
+  document.getElementById('postCitySelect').innerHTML = t('cities').map(c => `<option>${c}</option>`).join('');
+}
+
+function doSearch() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (!q) { renderGrid(currentCat); return; }
+  const filtered = products.filter(p =>
+    (lang==='en' ? p.name_en : p.name_zh).toLowerCase().includes(q) ||
+    (lang==='en' ? p.desc_en : p.desc_zh).toLowerCase().includes(q)
+  );
+  document.getElementById('gridTitle').textContent = `"${q}" (${filtered.length})`;
+  document.getElementById('productGrid').innerHTML = filtered.map(p => `
+    <div class="card" onclick="openDetail(${p.id})">
+      <div class="card-img">${p.icon}</div>
+      <div class="card-body">
+        <div class="card-title">${lang==='en'?p.name_en:p.name_zh}</div>
+        <div class="card-loc">📍 ${lang==='en'?p.loc_en:p.loc_zh}</div>
+        <div class="card-footer">
+          <div class="card-price">${lang==='en'?'$':'¥'}${lang==='en'?p.price:p.price_zh}<small>${t('per_day')}</small></div>
+          <div class="card-rating">${p.rating} (${p.reviews})</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openLogin() { document.getElementById('loginModal').classList.add('open'); }
+function openPost() { document.getElementById('postModal').classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function submitPost() { closeModal('postModal'); alert(t('submit_success')); }
+
+document.querySelectorAll('.modal-bg').forEach(m => {
+  m.addEventListener('click', e => { if(e.target === m) m.classList.remove('open'); });
+});
+
+// init
+applyTranslations();
+renderCats();
+renderGrid(0);
+updatePostSelects();
+</script>
+</body>
+</html>
+
